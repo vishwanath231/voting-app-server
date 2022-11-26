@@ -1,6 +1,14 @@
 import bcrypt from 'bcryptjs';
 import asyncHandler from 'express-async-handler';
+
 import nodemailer from 'nodemailer';
+import ejs from 'ejs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 import generateToken from '../utils/generateToken.js';
 import User from '../models/auth/userModel.js';
 import UserInfo from '../models/info/userInfoModel.js';
@@ -108,6 +116,15 @@ const generatePin = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
 
+    const usernameInfo = await UserInfo.find({ user: user._id })
+   
+    let username;
+
+    usernameInfo.map(val => {
+        username = val.name
+    })
+    
+
     if (email !== '') {
 
         const random = Math.floor(Math.random() * 90 + 10)
@@ -125,58 +142,48 @@ const generatePin = asyncHandler(async (req, res) => {
         await user.save();
         
         
-        const output = `
-        <div style="font-family:'Sen',sans-serif;">
-            <h3>E-Voting OTP</h3>
-            <p style="margin-left: 1rem;">${otp}</p>
-        </div>`;
-
-        // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            port: 465,
-            secure: true, // use SSL // true for 465, false for other ports
+            service: 'gmail', 
             auth: {
-                user: `vishwanathvishwabai@gmail.com`, // generated ethereal user
-                pass: 'fqepeazarrgoydyy'  // generated ethereal password
-            },
-            tls:{
-                rejectUnAuthorized:true
+                user: `vishwanathvishwabai@gmail.com`, 
+                pass: 'fqepeazarrgoydyy'
             }
-        
         });
 
-        // setup email data with unicode symbols
-        let mailOptions = {
-            from: 'vishwanathvishwabai@gmail.com', // sender address
-            to: email, // list of receivers
-            subject: 'E-Voting OTP', // Subject line
-            text: `Your E-Voting OTP`, // plain text body
-            html: output // html body
-        };
 
-        // send mail with defined transport object
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                return res.status(401).json({
-                    msg: error
-                });
-            }
-            // console.log('Message sent: %s', info.messageId);   
-            // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-
-            if (info) {
-                return res.status(200).json({
-                    msg: `Message has been sent ${email}`,
-                    token: generateToken(user._id),
-                    success: true,
-                    data: {
-                        id: user._id,
-                        reg_no: user.reg_no,
-                        email: user.email,
-                        role: user.role
+        ejs.renderFile(__dirname + '/templates/welcome.ejs', { email, otp, username }, (err, data) => {
+            if (err) {
+                console.log(err);
+            } else {
+            
+                var mailOptions = {
+                    from: 'vishwanathvishwabai@gmail.com',
+                    to: email,
+                    subject: 'E-Voting',
+                    html: data
+                };
+    
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return res.status(401).json({
+                            msg: error
+                        });
                     }
-                })
+                    
+                    if (info) {
+                        return res.status(200).json({
+                            msg: `Message has been sent ${email}`,
+                            token: generateToken(user._id),
+                            success: true,
+                            data: {
+                                id: user._id,
+                                reg_no: user.reg_no,
+                                email: user.email,
+                                role: user.role
+                            }
+                        })
+                    }
+                });
             }
         });
 
