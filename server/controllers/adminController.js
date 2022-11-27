@@ -7,6 +7,7 @@ import Nomination from '../models/nominationModel.js';
 import UserInfo from '../models/info/userInfoModel.js';
 import cloudinary from '../utils/cloudinary.js';
 import Vote from '../models/voteModel.js';
+import Contact from '../models/contactModel.js';
 
 
 
@@ -228,6 +229,111 @@ const getUserVoteById = asyncHandler(async (req, res) => {
 
 
 
+
+/**
+ * @desc    Get contact list
+ * @method  GET
+ * @routes  /api/admin/contact
+ * @access  private
+ */
+
+const getUserContact = asyncHandler(async (req, res) => {
+
+    const contacts = await Contact.find({})
+    
+    res.status(200).json(contacts)
+})
+
+
+/**
+ * @desc    Get individual contact details
+ * @method  GET
+ * @routes  /api/admin/contact/:id
+ * @access  private
+ */
+
+ const getUserContactById = asyncHandler(async (req, res) => {
+    
+    const contact = await Contact.findById(req.params.id)
+
+    if (!contact.user) {
+        res.status(400)
+        throw Error("User ID not found!")
+    }
+
+    const user = await UserInfo.findById(contact.user)
+
+    res.status(200).json({
+        contact: contact,
+        user: user
+    })
+})
+
+
+
+/**
+ * @desc    delete individual contact 
+ * @method  DELETE
+ * @routes  /api/admin/contact/del/:id
+ * @access  private
+ */
+
+ const deleteUserContactById = asyncHandler(async (req, res) => {
+    
+    const contact = await Contact.findById(req.params.id)
+
+    if (!contact) {
+        res.status(400)
+        throw Error("User ID not found!")
+    }else{
+        await contact.remove();
+    }
+
+    res.status(200).json({
+        message: 'Deleted successful!'
+    })
+})
+
+
+
+/**
+ * @desc    get all admins
+ * @method  GET
+ * @routes  /api/admin/all
+ * @access  private
+ */
+
+ const getAllAdmins = asyncHandler(async (req, res) => {
+    
+    const all = await AdminInfo.find({})
+
+    res.status(200).json(all)
+})
+
+
+
+/**
+ * @desc    Get individual admin details
+ * @method  GET
+ * @routes  /api/admin/all/:id
+ * @access  private
+ */
+
+ const getAdminById = asyncHandler(async (req, res) => {
+    
+    const admin = await AdminInfo.findById(req.params.id)
+
+    if (!admin) {
+        res.status(400)
+        throw Error("Admin ID not found!")
+    }
+
+    res.status(200).json(admin)
+})
+
+
+
+
 export {
     adminLogin,
     profile,
@@ -238,4 +344,9 @@ export {
     deleteNomination,
     getUserVote,
     getUserVoteById,
+    getUserContact,
+    getUserContactById,
+    deleteUserContactById,
+    getAllAdmins,
+    getAdminById
 };

@@ -7,7 +7,8 @@ import {
     userProfile,
     getNominationList,
     getNominationById,
-    userVote 
+    userVote ,
+    userContact
 } from '../controllers/userController.js';
 import { userProtect } from '../middlewares/authMiddleware.js';
 
@@ -18,6 +19,7 @@ router.route('/profile').get(userProtect, userProfile)
 router.route('/nomination').get(userProtect, getNominationList)
 router.route('/nomination/:id').get(userProtect, getNominationById)
 router.route('/vote').post(userProtect, userVote)
+router.route('/contact').post(userProtect, userContact)
 
 
 

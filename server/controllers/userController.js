@@ -8,12 +8,12 @@ import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 import generateToken from '../utils/generateToken.js';
 import User from '../models/auth/userModel.js';
 import UserInfo from '../models/info/userInfoModel.js';
 import Nomination from '../models/nominationModel.js';
 import Vote from '../models/voteModel.js';
+import Contact from '../models/contactModel.js';
 
 
 
@@ -116,6 +116,7 @@ const generatePin = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
 
+    
     const usernameInfo = await UserInfo.find({ user: user._id })
    
     let username;
@@ -123,7 +124,6 @@ const generatePin = asyncHandler(async (req, res) => {
     usernameInfo.map(val => {
         username = val.name
     })
-    
 
     if (email !== '') {
 
@@ -140,7 +140,9 @@ const generatePin = asyncHandler(async (req, res) => {
         }
         
         await user.save();
-        
+
+
+
         
         let transporter = nodemailer.createTransport({
             service: 'gmail', 
@@ -151,7 +153,7 @@ const generatePin = asyncHandler(async (req, res) => {
         });
 
 
-        ejs.renderFile(__dirname + '/templates/welcome.ejs', { email, otp, username }, (err, data) => {
+        ejs.renderFile(__dirname + '/templates/email.ejs', { email, otp, username }, (err, data) => {
             if (err) {
                 console.log(err);
             } else {
@@ -186,7 +188,6 @@ const generatePin = asyncHandler(async (req, res) => {
                 });
             }
         });
-
     }
 
     if (phone_no !== '') {
@@ -354,6 +355,57 @@ const userVote = asyncHandler(async (req, res) => {
 
 
 
+
+/**
+ * @desc    user contact form
+ * @method  POST
+ * @routes  /api/users/contact
+ * @access  public
+ */
+
+const userContact = asyncHandler(async (req, res) => {
+
+    const { email, subject, message } = req.body;
+    
+    if(!email || !subject || !message){
+        res.status(400)
+        throw Error('please add all fields!')
+    }
+
+    const user = await UserInfo.find({ user: req.user._id })
+
+    if (!user) {
+        res.status(400)
+        throw Error("user doesn't exists!") 
+    }
+
+    let username;
+    let userId;
+
+    user.map(val => {
+        username = val.name
+        userId = val._id
+    })
+
+
+    const contactSaved = new Contact({
+        user: userId,
+        username: username,
+        email: email,
+        subject: subject,
+        message: message,
+    })
+
+
+    await contactSaved.save()
+
+    res.status(200).json({
+        msg: 'Message saved successfull!'
+    })
+})
+
+
+
 export {
     userLogin,
     generatePin,
@@ -361,5 +413,6 @@ export {
     userProfile,
     getNominationList,
     getNominationById,
-    userVote
+    userVote,
+    userContact
 };

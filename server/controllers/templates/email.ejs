@@ -1,0 +1,73 @@
+<%- include('./includes/header.ejs') %>
+
+<div class="container" style="@import url('https://fonts.googleapis.com/css2?family=Sen&display=swap'); background-color: #fdfdfd;" >
+  
+    <div style="font-family: 'Sen', sans-serif;">
+      
+      <div
+        style="
+          background: #2b2d42;
+          padding: 15px 0;
+          text-align: center;
+        "
+      >
+    <!--  <div style="text-align: center;">
+            <img style="width: 100px;" src="cid:logo"  />
+          </div> -->
+          <div style="text-align: center; font-size: 1.5rem; font-weight: 800; letter-spacing: 4px; color: #fff;">E-Voting</div>
+      </div>
+
+      <div style="margin: .8rem 0 1rem 0; font-size: 17px; font-weight: 500; color: #000;">
+         Hi <%= username %>
+      </div>
+      
+      <p style="color: black; font-size: 17px; font-weight: 500;">
+        We sharing one-time verification code to ensure it's you.
+      </p>
+
+      <div 
+        style="
+          text-align: center;
+          margin: .7rem 0;
+        "
+      >
+          <p
+            style="
+              letter-spacing: 10px;
+              font-size: 1.4rem;
+              font-weight: 700;
+              color: #e07a5f;
+            "
+          ><%= otp %></p>
+      </div>
+
+      <p 
+        style="
+          color: #ef233c;
+          font-size: 17px; 
+          font-weight: 500;
+        "
+      >
+          Please do not share your <strong>OTP</strong> for security purpose.
+      </p>
+
+      <p style="color: black; font-size: 17px; font-weight: 500;">
+        Voting is your prior right, please do not be irresponsible with it.
+      </p>
+    
+      <div
+        style="
+          background: #2b2d42;
+          padding: 15px 0;
+          text-align: center;
+          color: #fff;
+          font-size: 17px; font-weight: 500;
+          line-height: 24px;
+        "
+      >
+        <p>For furthur queries & assistance contact <a href="mailto:vishwanathvishwabai@gmail.com">vishwanathvishwabai@gmail.com</a></p>
+      </div>
+    </div>
+</div>
+
+<%- include('./includes/footer.ejs') %>

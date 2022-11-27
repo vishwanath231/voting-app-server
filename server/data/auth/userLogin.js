@@ -168,9 +168,6 @@ const userLoginData = [
         reg_no: '21csea68',
         password: bcrypt.hashSync('2000-11-30',10)
     },{
-        reg_no: '21csea69',
-        password: bcrypt.hashSync('1998-01-22',10)
-    },{
         reg_no: '21csea70',
         password: bcrypt.hashSync('2001-07-11',10)
     },{
