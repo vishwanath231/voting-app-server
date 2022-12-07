@@ -208,9 +208,6 @@ const voteLocationAnalysis = asyncHandler(async (req, res) => {
         throw Error("Choose location!")
     }
 
-    console.log(location);
-
-
     const vote = await Vote.find({})
 
     const result = vote.filter(val => val.location.toLowerCase() === location)
