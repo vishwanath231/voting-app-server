@@ -335,6 +335,20 @@ const userVote = asyncHandler(async (req, res) => {
         throw Error("Register number already exists, you already voted!")
     }
 
+    const voteUser = await User.findById(req.user._id)
+    
+    const usernameInfo = await UserInfo.find({ user: voteUser._id })
+   
+    const userEmail = voteUser.email;
+
+    let username;
+
+    usernameInfo.map(val => {
+        username = val.name
+    })
+
+    const message = "YOU HAVE VOTED SUCCESSFULLY";
+
     const voteSaved = new Vote({
         user: id,
         reg_no: reg_no,
@@ -347,9 +361,41 @@ const userVote = asyncHandler(async (req, res) => {
 
     await voteSaved.save()
 
-    res.status(200).json({
-        msg: 'voted successful!'
-    })
+    let transporter = nodemailer.createTransport({
+        service: 'gmail', 
+        auth: {
+            user: `vishwanathvishwabai@gmail.com`, 
+            pass: 'fqepeazarrgoydyy'
+        }
+    });
+
+    ejs.renderFile(__dirname + '/templates/vote.ejs', { userEmail, message, username }, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+        
+            var mailOptions = {
+                from: 'vishwanathvishwabai@gmail.com',
+                to: userEmail,
+                subject: 'E-Voting',
+                html: data
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return res.status(401).json({
+                        msg: error
+                    });
+                }
+                
+                if (info) {
+                    res.status(200).json({
+                        msg: 'voted successful!'
+                    })
+                }
+            });
+        }
+    });
 
 })
 
