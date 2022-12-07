@@ -7,7 +7,8 @@ import {
     voteLocationAnalysis,
     voteCountAnalysis, 
     handGenderAnalysis,
-    leafGenderAnalysis
+    leafGenderAnalysis,
+    getSelectiveLocationAnalysis
 } from '../controllers/analysisController.js';
 
 
@@ -18,6 +19,6 @@ router.route('/voteLocation').get(voteLocationAnalysis)
 router.route('/voteCount').get(voteCountAnalysis)
 router.route('/handGender').get(handGenderAnalysis)
 router.route('/leafGender').get(leafGenderAnalysis)
-
+router.route('/oneLocation').post(getSelectiveLocationAnalysis)
 
 export default router;

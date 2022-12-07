@@ -190,7 +190,51 @@ const voteLocationAnalysis = asyncHandler(async (req, res) => {
 
     res.status(200).json(obj)
     
+})
+
+
+/**
+ * @desc    selective location vote count analysis
+ * @method  POST
+ * @routes  /api/analysis/oneLocation
+ * @access  private
+ */
+ const getSelectiveLocationAnalysis = asyncHandler(async (req, res) => {
+
+    const { location } = req.body;
+
+    if (!location) {
+        res.status(400)
+        throw Error("Choose location!")
+    }
+
+    console.log(location);
+
+
+    const vote = await Vote.find({})
+
+    const result = vote.filter(val => val.location.toLowerCase() === location)
+
+
+    const district = [];
+
+    result.map(val => {
+        if (typeof val.location === 'string') {
+            district.push(val.vote.toLowerCase())           
+        }
+    })
     
+    const obj = {};
+
+    for (let i = 0; i < district.length; i++){
+        if(obj[district[i]] === undefined){
+           obj[district[i]] = 1;
+        }else{
+           obj[district[i]]++;
+        }
+     }
+
+    res.status(200).json(obj)
 })
 
 
@@ -203,5 +247,6 @@ export {
     voteLocationAnalysis,
     voteCountAnalysis,
     handGenderAnalysis,
-    leafGenderAnalysis
+    leafGenderAnalysis,
+    getSelectiveLocationAnalysis
 };
