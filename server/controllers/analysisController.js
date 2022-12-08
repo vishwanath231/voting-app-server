@@ -236,6 +236,67 @@ const voteLocationAnalysis = asyncHandler(async (req, res) => {
 
 
 
+const getSelectiveLocationGenderAnalysis = asyncHandler(async (req, res) => {
+
+    const { location } = req.body;
+
+    if (!location) {
+        res.status(400)
+        throw Error("Choose location!")
+    }
+    const vote = await Vote.find({})
+
+    const result = vote.filter(val => val.location.toLowerCase() === location)
+
+    const leaf = result.filter(val => val.vote === 'leaf');
+    const hand = result.filter(val => val.vote === 'hand');
+
+    
+    const locLeafGender = [];
+    const locHandGender = [];
+    
+    leaf.map(val => {
+        if (typeof val.gender === 'string') {
+            locLeafGender.push(val.gender.toLowerCase())           
+        }
+    })
+
+    hand.map(val => {
+        if (typeof val.gender === 'string') {
+            locHandGender.push(val.gender.toLowerCase())           
+        }
+    })
+
+    
+    const leafObj = {};
+    const handObj = {};
+
+    for (let i = 0; i < locLeafGender.length; i++){
+        if(leafObj[locLeafGender[i]] === undefined){
+            leafObj[locLeafGender[i]] = 1;
+        }else{
+            leafObj[locLeafGender[i]]++;
+        }
+    }
+
+
+    for (let i = 0; i < locHandGender.length; i++){
+        if(handObj[locHandGender[i]] === undefined){
+            handObj[locHandGender[i]] = 1;
+        }else{
+            handObj[locHandGender[i]]++;
+        }
+    }
+
+    res.status(200).json({
+        vote:{
+            hand: handObj,
+            leaf: leafObj
+        }
+    })
+})
+
+
 
 export {
     userGenderAnalysis,
@@ -245,5 +306,6 @@ export {
     voteCountAnalysis,
     handGenderAnalysis,
     leafGenderAnalysis,
-    getSelectiveLocationAnalysis
+    getSelectiveLocationAnalysis,
+    getSelectiveLocationGenderAnalysis
 };
