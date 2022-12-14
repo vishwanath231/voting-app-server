@@ -126,9 +126,17 @@ const generatePin = asyncHandler(async (req, res) => {
     })
 
     if (email !== '') {
+       
+        let random = '';
+        let letters = 'abcdefghijklmnopqrstuvwxyz';
+        let lettersLength = letters.length;
 
-        const random = Math.floor(Math.random() * 90 + 10)
-        const otp = ''+ random + pin;
+        for (let i = 0; i < 2; i++) {
+            random += letters.charAt(Math.floor(Math.random() * lettersLength))
+        }
+
+        // const random = Math.floor(Math.random() * 90 + 10)
+        const otp = ''+ pin + random;
     
         
         if (email) {
@@ -338,6 +346,12 @@ const userVote = asyncHandler(async (req, res) => {
         res.status(400)
         throw Error("Register number invalid!")
     }
+    
+    const isRegNo = await Vote.findOne({ reg_no: reg_no })  
+    if (isRegNo){
+        res.status(400)
+        throw Error("Register number already exists, you already voted!")
+    }
 
     const voteUser = await User.findById(req.user._id)
 
@@ -350,7 +364,7 @@ const userVote = asyncHandler(async (req, res) => {
 
     if (reg === voteUser.reg_no) {
         res.status(400)
-        throw Error("Register number already exists, you already voted!");
+        throw Error("Register number already exists!");
 
     }else{
         
