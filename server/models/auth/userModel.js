@@ -19,8 +19,7 @@ const userSchema = new Schema({
         default: null, 
     },
     code: {
-        type: Number,
-        default: 0,
+        type: String,
     },
     code_verification: {
         type: Boolean,
