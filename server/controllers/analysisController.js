@@ -244,9 +244,12 @@ const getSelectiveLocationGenderAnalysis = asyncHandler(async (req, res) => {
         res.status(400)
         throw Error("Choose location!")
     }
+
     const vote = await Vote.find({})
 
     const result = vote.filter(val => val.location.toLowerCase() === location)
+
+    console.log(result.length);
 
     const leaf = result.filter(val => val.vote === 'leaf');
     const hand = result.filter(val => val.vote === 'hand');
@@ -288,14 +291,16 @@ const getSelectiveLocationGenderAnalysis = asyncHandler(async (req, res) => {
         }
     }
 
+
     res.status(200).json({
         vote:{
+            location: location,
+            totalVotes: result.length, 
             hand: handObj,
             leaf: leafObj
         }
     })
 })
-
 
 
 export {
